@@ -26,5 +26,3 @@ reddit --help
 ## 🚀 TODO : 
 - Display image directly on terminal.
 - Use some colors
-
-:book
