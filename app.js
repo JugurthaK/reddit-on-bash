@@ -1,21 +1,39 @@
 const reddit = require('redditor')
-const argv = process.argv[2];
+const color = require('./color');
+const subr = process.argv[2];
+let sortBy = process.argv[3];
 
-//http://www.reddit.com/r/subreddit/new.json?sort=new
-//http://www.reddit.com/r/subreddit/top/.json?sort=top
+function urlGenerator(){
+    sortBy == undefined ? sortBy = 'hot' : sortBy = sortBy.toLowerCase();
+    switch (sortBy) {
+        case 'new':
+            return `/r/${subr}/new.json?sort=new`;
+            break;
+        case 'top':
+            return `/r/${subr}/top.json?sort=top`;
+            break;
+        case 'hot':
+            return `/r/${subr}/hot.json?sort=hot`;
+            break;
+    }
+}
 
-if (argv === '--help' || argv == undefined){
-    console.log('my favourite subs : \n dankmemes\n programmerhumor\n memes');
-    console.log('type reddit subreddit');
+if (subr === '--help' || subr == undefined){
+    console.log(`Parameters : ${color.title('reddit subreddit sortby')}`);
+    console.log('   Subreddit :    All subreddits available');
+    console.log('Sort by :');
+    console.log('   Hot :  Upvoted growing memes');
+    console.log('   Top :  Best memes of the past 24 hours');
+    console.log('   New :  Freshly new memes');
 } else {
-    reddit.get(`/r/${argv}/new.json?sort=new`, (err, res) => {
+    reddit.get(urlGenerator(), (err, res) => {
         if (err) throw err;
         let r = res.data.children;
         r.forEach(post => {
-            let url = post.data.url
+            let img = post.data.url;
             let title = post.data.title;
-            if (url.indexOf('.png') !== -1 || url.indexOf('.jpg') !== -1 || url.indexOf('.gif') !== -1){
-                console.log(`${title}\n → ${url} \n`);
+            if (img.indexOf('.png') !== -1 || img.indexOf('.jpg') !== -1 || img.indexOf('.gif') !== -1){
+                console.log(`${color.title(title)}\n ${color.arrow(' →')} ${img} \n`);
             }
         });
     })  
